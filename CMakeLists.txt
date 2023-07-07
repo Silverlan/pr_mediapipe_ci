@@ -6,5 +6,7 @@ set(PROJ_NAME pr_mediapipe)
 
 project(${PROJ_NAME} CXX)
 
+add_external_library(pragma_mediapipe_wrapper)
+
 link_generic_module_libraries()
 register_pragma_module(${PROJ_NAME})
