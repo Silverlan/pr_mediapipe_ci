@@ -6,9 +6,11 @@ pragma_install_lib("${CMAKE_CURRENT_BINARY_DIR}/modules/pr_mediapipe/${PR_MODULE
 if(WIN32)
     pragma_install_file("${MEDIAPIPE_WRAPPER_BUILD_DIR}/mediapipe_pragma_wrapper.dll" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
     pragma_install_file("${MEDIAPIPE_OPENCV_BUILD_DIR}/opencv_world3410.dll" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
+    pragma_install_file("${MEDIAPIPE_OPENCV_BUILD_DIR}/opencv_ffmpeg3410_64.dll" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
 else()
     pragma_install_file("${MEDIAPIPE_WRAPPER_BUILD_DIR}/libmediapipe_pragma_wrapper.so" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
     pragma_install_file("${MEDIAPIPE_OPENCV_BUILD_DIR}/libopencv_world3410.so" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
+    pragma_install_file("${MEDIAPIPE_OPENCV_BUILD_DIR}/libopencv_ffmpeg3410_64.so" "${MEDIAPIPE_INSTALL_DIR}" OPTIONAL)
 endif()
 
 pragma_install_create_directory("${MEDIAPIPE_INSTALL_DIR}/mediapipe")
