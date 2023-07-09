@@ -17,6 +17,12 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 	mpw::init(path.GetString().c_str(), "/");
 
 	auto &libMediapipe = lua.RegisterLibrary("mediapipe");
+	libMediapipe[luabind::def("get_blend_shape_name", &mpw::get_blend_shape_name)];
+	libMediapipe[luabind::def("get_blend_shape_enum", &mpw::get_blend_shape_enum)];
+	libMediapipe[luabind::def("get_pose_landmark_name", &mpw::get_pose_landmark_name)];
+	libMediapipe[luabind::def("get_pose_landmark_enum", &mpw::get_pose_landmark_enum)];
+	libMediapipe[luabind::def("get_hand_landmark_name", &mpw::get_hand_landmark_name)];
+	libMediapipe[luabind::def("get_hand_landmark_enum", &mpw::get_hand_landmark_enum)];
 
 	auto classDefLm = luabind::class_<mpw::MotionCaptureManager::LandmarkData>("LandmarkData");
 	classDefLm.def(
@@ -44,25 +50,25 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 		  return ss.str();
 	  });
 	classDef.scope[luabind::def(
-	  "create_from_image", +[](lua_State *l, const std::string &source) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
+	  "create_from_image", +[](lua_State *l, const std::string &source, mpw::MotionCaptureManager::Output outputs) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
 		  std::string err;
-		  auto manager = mpw::MotionCaptureManager::CreateFromImage(source, err);
+		  auto manager = mpw::MotionCaptureManager::CreateFromImage(source, err, outputs);
 		  if(!manager)
 			  return luabind::object {l, std::pair<bool, std::string> {false, err}};
 		  return luabind::object {l, manager};
 	  })];
 	classDef.scope[luabind::def(
-	  "create_from_video", +[](lua_State *l, const std::string &source) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
+	  "create_from_video", +[](lua_State *l, const std::string &source, mpw::MotionCaptureManager::Output outputs) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
 		  std::string err;
-		  auto manager = mpw::MotionCaptureManager::CreateFromVideo(source, err);
+		  auto manager = mpw::MotionCaptureManager::CreateFromVideo(source, err, outputs);
 		  if(!manager)
 			  return luabind::object {l, std::pair<bool, std::string> {false, err}};
 		  return luabind::object {l, manager};
 	  })];
 	classDef.scope[luabind::def(
-	  "create_from_camera", +[](lua_State *l, mpw::CameraDeviceId devId) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
+	  "create_from_camera", +[](lua_State *l, mpw::CameraDeviceId devId, mpw::MotionCaptureManager::Output outputs) -> Lua::var<mpw::MotionCaptureManager, std::pair<bool, std::string>> {
 		  std::string err;
-		  auto manager = mpw::MotionCaptureManager::CreateFromCamera(devId, err);
+		  auto manager = mpw::MotionCaptureManager::CreateFromCamera(devId, err, outputs);
 		  if(!manager)
 			  return luabind::object {l, std::pair<bool, std::string> {false, err}};
 		  return luabind::object {l, manager};
@@ -75,9 +81,11 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 			  return {res, {}};
 		  return {res, err};
 	  });
+	classDef.def("Stop", &mpw::MotionCaptureManager::Stop);
 	classDef.def("LockResultData", &mpw::MotionCaptureManager::LockResultData);
 	classDef.def("UnlockResultData", &mpw::MotionCaptureManager::UnlockResultData);
 	classDef.def("GetLastError", &mpw::MotionCaptureManager::GetLastError);
+
 	classDef.def("GetBlendShapeCollectionCount", &mpw::MotionCaptureManager::GetBlendShapeCollectionCount);
 	classDef.def(
 	  "GetBlendShapeCoefficient", +[](mpw::MotionCaptureManager &manager, size_t collectionIndex, mpw::BlendShape blendShape) -> std::optional<float> {
@@ -97,6 +105,24 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 		  manager.GetBlendShapeCoefficientLists(coefficients);
 		  return coefficients;
 	  });
+
+	classDef.def("GetFaceGeometryCount", &mpw::MotionCaptureManager::GetFaceGeometryCount);
+	classDef.def(
+	  "GetFaceGeometry", +[](mpw::MotionCaptureManager &manager, size_t index) -> std::optional<std::pair<std::vector<Vector3>, std::vector<uint32_t>>> {
+		  mpw::MeshData meshData;
+		  auto res = manager.GetFaceGeometry(index, meshData);
+		  if(!res)
+			  return {};
+		  std::vector<Vector3> verts;
+		  verts.resize(meshData.vertices.size());
+		  auto n = verts.size();
+		  for(auto i = decltype(n) {0u}; i < n; ++i) {
+			  auto &v = meshData.vertices[i];
+			  verts[i] = {v[0], v[1], v[2]};
+		  }
+		  return {std::pair<std::vector<Vector3>, std::vector<uint32_t>> {verts, meshData.indices}};
+	  });
+
 	classDef.def("GetPoseCollectionCount", &mpw::MotionCaptureManager::GetPoseCollectionCount);
 	classDef.def(
 	  "GetPoseWorldLandmark", +[](mpw::MotionCaptureManager &manager, size_t collectionIndex, mpw::PoseLandmark poseLandmark) -> std::optional<mpw::MotionCaptureManager::LandmarkData> {
@@ -118,6 +144,7 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 		  manager.GetPoseWorldLandmarkLists(coefficients);
 		  return coefficients;
 	  });
+
 	classDef.def("GetHandCollectionCount", &mpw::MotionCaptureManager::GetHandCollectionCount);
 	classDef.def(
 	  "GetHandWorldLandmark", +[](mpw::MotionCaptureManager &manager, size_t collectionIndex, mpw::HandLandmark handLandmark) -> std::optional<mpw::MotionCaptureManager::LandmarkData> {
@@ -139,9 +166,20 @@ DLLEXPORT void pragma_initialize_lua(Lua::Interface &lua)
 		  manager.GetHandWorldLandmarkLists(coefficients);
 		  return coefficients;
 	  });
+
 	classDef.def("IsFrameComplete", &mpw::MotionCaptureManager::IsFrameComplete);
 	classDef.def("WaitForFrame", &mpw::MotionCaptureManager::WaitForFrame);
 	libMediapipe[classDef];
+
+	Lua::RegisterLibraryEnums(lua.GetState(), "mediapipe",
+	  {
+	    {"OUTPUT_NONE", umath::to_integral(mpw::MotionCaptureManager::Output::None)},
+	    {"OUTPUT_BLEND_SHAPE_COEFFICIENTS", umath::to_integral(mpw::MotionCaptureManager::Output::BlendShapeCoefficients)},
+	    {"OUTPUT_FACE_GEOMETRY", umath::to_integral(mpw::MotionCaptureManager::Output::FaceGeometry)},
+	    {"OUTPUT_POSE_WORLD_LANDMARKS", umath::to_integral(mpw::MotionCaptureManager::Output::PoseWorldLandmarks)},
+	    {"OUTPUT_HAND_WORLD_LANDMARKS", umath::to_integral(mpw::MotionCaptureManager::Output::HandWorldLandmarks)},
+	    {"OUTPUT_DEFAULT", umath::to_integral(mpw::MotionCaptureManager::Output::Default)},
+	  });
 
 	Lua::RegisterLibraryEnums(lua.GetState(), "mediapipe",
 	  {
