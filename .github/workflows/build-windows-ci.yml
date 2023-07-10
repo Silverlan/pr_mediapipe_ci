@@ -44,15 +44,16 @@ jobs:
 
       - name: Build Module
         id: build-module
-        uses: Silverlan/pragma/github_actions/build_generic_module@master
+        uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
         with:
-          module: ${{ steps.module-info.outputs.module_name }} --build-mediapipe=0
+          module: ${{ steps.module-info.outputs.module_name }}
+          build-args: '--build-mediapipe=0'
 
 
       - shell: msys2 {0}
         run: |
           curDir=$(pwd)
-          cd "./pragma/deps/mediapipe"
+          cd "c:/pragma/deps/mediapipe"
           # Execute bat
           echo "Executing bat..."
           "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
