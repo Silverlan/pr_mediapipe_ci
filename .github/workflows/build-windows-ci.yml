@@ -31,6 +31,13 @@ jobs:
             generators: "Visual Studio 16 2022"
             build_dir: 'build'
     steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc
+
       - name: Get Module Info
         id: module-info
         uses: Silverlan/pr_module_template/github_actions/get_module_info@main
@@ -39,7 +46,15 @@ jobs:
         id: build-module
         uses: Silverlan/pragma/github_actions/build_generic_module@master
         with:
-          module: '${{ steps.module-info.outputs.module_name }}'
+          module: '${{ steps.module-info.outputs.module_name }} --build-mediapipe=0'
+
+      - shell: msys2 {0}
+        run: |
+          curDir=$(pwd)
+          cd "./pragma/deps/mediapipe"
+          # Execute bat
+          echo "Executing bat..."
+          "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
 
       - name: Create Release Files
         shell: bash
