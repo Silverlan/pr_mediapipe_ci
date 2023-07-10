@@ -42,6 +42,9 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install python extensions
+        run: pip install numpy
+
       - name: Get Python location
         id: python-loc
         run: |
