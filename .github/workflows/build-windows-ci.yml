@@ -38,6 +38,16 @@ jobs:
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Get Python location
+        id: python-loc
+        run: |
+          $pythonExecutable = (where.exe python).Split()[0]
+          echo "::set-output name=python_location::$pythonExecutable"
+
       - name: Get Module Info
         id: module-info
         uses: Silverlan/pr_module_template/github_actions/get_module_info@main
@@ -47,8 +57,7 @@ jobs:
         uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
         with:
           module: ${{ steps.module-info.outputs.module_name }}
-          build-args: '--build-mediapipe=0 --build=0'
-
+          build-args: '--build-mediapipe=0 --build=0 --python39-path="${{ steps.python-loc.outputs.python_location }}"'
 
       - name: Build Mediapipe
         shell: msys2 {0}
