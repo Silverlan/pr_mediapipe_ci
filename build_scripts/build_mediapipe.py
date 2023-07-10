@@ -29,6 +29,7 @@ if args["python39_path"]:
 	pythonPath = args["python39_path"]
 if args["bazel_path"]:
 	bazelPath = args["bazel_path"]
+buildMediapipe = 0
 if args["build_mediapipe"]:
 	buildMediapipe = args["build_mediapipe"]
 
