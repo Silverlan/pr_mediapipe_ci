@@ -48,6 +48,7 @@ jobs:
         with:
           module: '${{ steps.module-info.outputs.module_name }} --build-mediapipe=0'
 
+
       - shell: msys2 {0}
         run: |
           curDir=$(pwd)
