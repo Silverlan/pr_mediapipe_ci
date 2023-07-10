@@ -46,7 +46,7 @@ jobs:
         id: build-module
         uses: Silverlan/pragma/github_actions/build_generic_module@master
         with:
-          module: '${{ steps.module-info.outputs.module_name }} --build-mediapipe=0'
+          module: ${{ steps.module-info.outputs.module_name }} --build-mediapipe=0
 
 
       - shell: msys2 {0}
