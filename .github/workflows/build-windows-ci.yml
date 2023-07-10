@@ -45,7 +45,8 @@ jobs:
       - name: Get Python location
         id: python-loc
         run: |
-          $pythonExecutable = (where.exe python).Split()[0]
+          $pythonExecutable = where.exe python
+          $pythonExecutable = $pythonExecutable -replace '\\python\.exe$', ''
           echo "::set-output name=python_location::$pythonExecutable"
 
       - name: Get Module Info
