@@ -47,17 +47,25 @@ jobs:
         uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
         with:
           module: ${{ steps.module-info.outputs.module_name }}
-          build-args: '--build-mediapipe=0'
+          build-args: '--build-mediapipe=0 --build=0'
 
 
-      - shell: msys2 {0}
+      - name: Build Mediapipe
+        shell: msys2 {0}
         run: |
           curDir=$(pwd)
           cd "c:/pragma/deps/mediapipe"
           # Execute bat
           echo "Executing bat..."
           "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
-
+          
+      - name: Build Module 2
+        id: build-module2
+        uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
+        with:
+          module: ${{ steps.module-info.outputs.module_name }}
+          build-args: '--build-mediapipe=0'
+         
       - name: Create Release Files
         shell: bash
         run: |
