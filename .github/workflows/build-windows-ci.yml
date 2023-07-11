@@ -52,6 +52,9 @@ jobs:
           $pythonExecutable = $pythonExecutable -replace '\\python\.exe$', ''
           echo "::set-output name=python_location::$pythonExecutable"
 
+      - name: Setup Bazelisk
+        uses: bazelbuild/setup-bazelisk@v2
+
       - name: Get Module Info
         id: module-info
         uses: Silverlan/pr_module_template/github_actions/get_module_info@main
