@@ -64,12 +64,20 @@ jobs:
         run: |
           echo "PYthon location: ${{ steps.python-loc.outputs.python_location }}"
 
+      - name: Download Bazel Fix
+        id: bazel-fix
+        run: |
+          curl -LO https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe
+          .\bazel-vs2022.exe --version
+          mv bazel-vs2022.exe bazel.exe
+          echo "::set-output name=bazel_location::$(pwd)"
+
       - name: Build Module
         id: build-module
         uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
         with:
           module: ${{ steps.module-info.outputs.module_name }}
-          build-args: '--build-mediapipe=0 --build=0 --python39-path="${{ steps.python-loc.outputs.python_location }}"'
+          build-args: '--build-mediapipe=0 --build=0 --python39-path="${{ steps.python-loc.outputs.python_location }}" --bazel-path="${{ steps.bazel-fix.outputs.bazel_location }}"'
 
       - name: Build Mediapipe
         shell: msys2 {0}
