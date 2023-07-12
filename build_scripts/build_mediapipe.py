@@ -172,19 +172,25 @@ bazel_cache_dir = bazel_cache_dir.replace("\\", "/")
 script_dir = os.path.dirname(os.path.abspath(__file__))
 msys_cmd_python = "SET \"PATH=%PATH%;" +pythonPath +"\""
 msys_cmd_bazel = bazelPath +" --output_user_root=\"" +bazel_cache_dir +"\" build -c " +buildType +" --define MEDIAPIPE_DISABLE_GPU=1 " +mediapipeTarget
-msys_cmd_bazel += " --experimental_cc_shared_library"
+# msys_cmd_bazel += " --experimental_cc_shared_library"
 
 os.chdir(script_dir)
 mkdir("temp",cd=True)
 # Create temporary bat-script with the commands we need to execute in the msys2 shell
-mediapipe_build_file = script_dir +"/temp/build_mediapipe.bat"
+if platform == "windows":
+	mediapipe_build_file = script_dir +"/temp/build_mediapipe.bat"
+else:
+	mediapipe_build_file = script_dir +"/temp/build_mediapipe.sh"
 mediapipe_build_file = mediapipe_build_file.replace("\\", "/")
 print_msg("Generating msys2 batch-script...")
 with open(mediapipe_build_file, 'w') as file:
 	nmediapipe_root = mediapipe_root
-	nmediapipe_root = nmediapipe_root.replace("\\", "/")
-	file.write("cd /d \"" +nmediapipe_root +"\"\n")
-	file.write(msys_cmd_python +"\n")
+	if platform == "windows":
+		nmediapipe_root = nmediapipe_root.replace("\\", "/")
+		file.write("cd /d \"" +nmediapipe_root +"\"\n")
+		file.write(msys_cmd_python +"\n")
+	else
+		file.write("cd \"" +nmediapipe_root +"\"\n")
 	file.write(msys_cmd_bazel +"\n")
 	# file.write("sleep 30")
 
@@ -192,36 +198,42 @@ if buildMediapipe:
 	# Build mediapipe wrapper
 	# Unfortunately mediapipe can only be built with msys2 under Windows.
 	os.chdir(mediapipe_root)
-	print_msg("Building mediapipe using msys2...")
-	subprocess.check_call( [msysPath, "-c", mediapipe_build_file] )
+	if platform == "windows":
+		print_msg("Building mediapipe using msys2...")
+		subprocess.check_call( [msysPath, "-c", mediapipe_build_file] )
 
-	# We have to wait until msys2 has completed building, but unfortunately we can't just wait for the process,
-	# because msys2 indirectly launches a separate "bash.exe" process, which then executes the actual commands.
-	# For this reason we have to do a hacky work-around to determine whether it's complete, by simply checking if
-	# a "bash.exe" process is currently running.
-	# This means that no other msys2 shell must be running in the background, because the script will wait until all
-	# of them have been closed.
-	# We'll also wait 3 seconds initially to ensure that msys2 has had enough time to actually launch "bash.exe".
-	print("Waiting for mediapipe build to finish...")
-	time.sleep(3)
-
-	# Wait to finish
-	# Command to check if the process is running
-	command = 'tasklist /FI "IMAGENAME eq bash.exe"'
-
-	# Check if the process is running in a loop
-	while True:
-		# Run the command and capture the output
-		result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-		# Check the output for the presence of the process
-		if 'bash.exe' not in result.stdout.decode():
-			break  # Exit the loop if the process has finished
-
-		time.sleep(1)  # Wait for 1 second before checking again
-	print_msg("Done!")
-
-	shutil.rmtree(script_dir +"/temp")
+		# We have to wait until msys2 has completed building, but unfortunately we can't just wait for the process,
+		# because msys2 indirectly launches a separate "bash.exe" process, which then executes the actual commands.
+		# For this reason we have to do a hacky work-around to determine whether it's complete, by simply checking if
+		# a "bash.exe" process is currently running.
+		# This means that no other msys2 shell must be running in the background, because the script will wait until all
+		# of them have been closed.
+		# We'll also wait 3 seconds initially to ensure that msys2 has had enough time to actually launch "bash.exe".
+		print("Waiting for mediapipe build to finish...")
+		time.sleep(3)
+	
+		# Wait to finish
+		# Command to check if the process is running
+		command = 'tasklist /FI "IMAGENAME eq bash.exe"'
+	
+		# Check if the process is running in a loop
+		while True:
+			# Run the command and capture the output
+			result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+	
+			# Check the output for the presence of the process
+			if 'bash.exe' not in result.stdout.decode():
+				break  # Exit the loop if the process has finished
+	
+			time.sleep(1)  # Wait for 1 second before checking again
+		print_msg("Done!")
+	
+		shutil.rmtree(script_dir +"/temp")
+	else:
+		# See https://developers.google.com/mediapipe/framework/getting_started/install#installing_on_debian_and_ubuntu
+		install_linux_system_packages(["libopencv-core-dev","libopencv-highgui-dev","libopencv-calib3d-dev","libopencv-features2d-dev","libopencv-imgproc-dev","libopencv-video-dev","libopencv-contrib-dev"],no_sudo,no_confirm)
+		# subprocess.run([mediapipe_root +"/setup_opencv.sh"],check=True,shell=True)
+		subprocess.run([mediapipe_build_file],check=True,shell=True)
 
 # All the tasks we need have been generated at this point, the only exception being the blendshapes one, which we have to
 # download manually.
