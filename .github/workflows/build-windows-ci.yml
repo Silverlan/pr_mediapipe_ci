@@ -69,8 +69,8 @@ jobs:
         run: |
           curl -LO https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe
           .\bazel-vs2022.exe --version
-          mv bazel-vs2022.exe bazel.exe
-          echo "::set-output name=bazel_location::$(pwd)"
+          # mv bazel-vs2022.exe bazel.exe
+          echo "::set-output name=bazel_location::$(pwd)/bazel-vs2022.exe"
 
       - name: Build Module
         id: build-module
@@ -86,6 +86,7 @@ jobs:
           cd "c:/pragma/deps/mediapipe"
           # Execute bat
           echo "Executing bat..."
+          type "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           
       - name: Build Module 2
