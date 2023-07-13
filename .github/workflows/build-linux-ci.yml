@@ -34,6 +34,11 @@ jobs:
         id: module-info
         uses: Silverlan/pr_module_template/github_actions/get_module_info@main
 
+      - name: Install Numpy
+        shell: bash
+        run: |
+          pip install numpy
+
       - name: Build Module
         id: build-module
         uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
