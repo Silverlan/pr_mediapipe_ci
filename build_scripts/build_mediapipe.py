@@ -177,7 +177,7 @@ msys_cmd_bazel = bazelPath +" --output_user_root=\"" +bazel_cache_dir +"\" build
 os.chdir(script_dir)
 mkdir("temp",cd=True)
 # Create temporary bat-script with the commands we need to execute in the msys2 shell
-if platform == "windows":
+if platform == "win32":
 	mediapipe_build_file = script_dir +"/temp/build_mediapipe.bat"
 else:
 	mediapipe_build_file = script_dir +"/temp/build_mediapipe.sh"
@@ -186,7 +186,7 @@ print_msg("Generating msys2 batch-script...")
 print("mediapipe_build_file: ",mediapipe_build_file)
 with open(mediapipe_build_file, 'w') as file:
 	nmediapipe_root = mediapipe_root
-	if platform == "windows":
+	if platform == "win32":
 		nmediapipe_root = nmediapipe_root.replace("\\", "/")
 		file.write("cd /d \"" +nmediapipe_root +"\"\n")
 		file.write(msys_cmd_python +"\n")
@@ -199,7 +199,7 @@ if buildMediapipe:
 	# Build mediapipe wrapper
 	# Unfortunately mediapipe can only be built with msys2 under Windows.
 	os.chdir(mediapipe_root)
-	if platform == "windows":
+	if platform == "win32":
 		print_msg("Building mediapipe using msys2...")
 		subprocess.check_call( [msysPath, "-c", mediapipe_build_file] )
 
