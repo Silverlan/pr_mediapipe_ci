@@ -87,6 +87,7 @@ if platform == "linux":
 	cmake_build(build_config)
 	cmake_build(build_config,["opencv_world"])
 	cmake_build(build_config,["install"])
+	opencv_build = opencv_root +"/install"
 
 	print("ALL FILES:")
 	subprocess.run(["ls","-R"])
@@ -100,6 +101,10 @@ else:
 		# These binaries originate from https://github.com/opencv/opencv/releases/tag/3.4.10
 		http_download("https://github.com/Silverlan/opencv-3.4.10-winx64/releases/download/v3.4.10/opencv-3.4.10-winx64.zip")
 		extract("opencv-3.4.10-winx64.zip")
+
+	print("ALL FILES:")
+	subprocess.run(["dir","/A-D","/S","/B"])
+	print("-----------------------")
 
 ########## mediapipe ##########
 os.chdir(deps_dir)
