@@ -98,11 +98,10 @@ jobs:
           
       - name: Build Module 2
         id: build-module2
-        uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
+        uses: Silverlan/pragma/github_actions/build@master
         with:
-          module: ${{ steps.module-info.outputs.module_name }}
-          build-args: '--build-mediapipe=0'
-         
+          build-args: '--with-lua-debugger=0 --with-common-modules=0 --with-essential-client-modules=0 --build-mediapipe=0 --module ${{ steps.module-info.outputs.module_name }}'
+
       - name: Create Release Files
         shell: bash
         run: |
