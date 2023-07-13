@@ -189,7 +189,7 @@ with open(mediapipe_build_file, 'w') as file:
 		nmediapipe_root = nmediapipe_root.replace("\\", "/")
 		file.write("cd /d \"" +nmediapipe_root +"\"\n")
 		file.write(msys_cmd_python +"\n")
-	else
+	else:
 		file.write("cd \"" +nmediapipe_root +"\"\n")
 	file.write(msys_cmd_bazel +"\n")
 	# file.write("sleep 30")
