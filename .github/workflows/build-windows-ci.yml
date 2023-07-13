@@ -93,7 +93,7 @@ jobs:
           echo "ALL FILES END"
           cd "c:/pragma/deps/mediapipe"
 
-          type "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
+          # type "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           
       - name: Build Module 2
