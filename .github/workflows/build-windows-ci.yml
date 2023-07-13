@@ -86,6 +86,13 @@ jobs:
           cd "c:/pragma/deps/mediapipe"
           # Execute bat
           echo "Executing bat..."
+          
+          echo "ALL FILES:"
+          cd "d:"
+          ls -R
+          echo "ALL FILES END"
+          cd "c:/pragma/deps/mediapipe"
+
           type "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           "$curDir/pragma/modules/pr_mediapipe/build_scripts/temp/build_mediapipe.bat"
           
