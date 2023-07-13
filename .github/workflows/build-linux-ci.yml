@@ -39,6 +39,7 @@ jobs:
         uses: Silverlan/tmp_pragma_ci/github_actions/build_generic_module@master
         with:
           module: '${{ steps.module-info.outputs.module_name }}'
+          build-args: '--bazel-path="bazel"'
 
       - name: Create Release Files
         shell: bash
