@@ -87,6 +87,10 @@ if platform == "linux":
 	cmake_build(build_config)
 	cmake_build(build_config,["opencv_world"])
 	cmake_build(build_config,["install"])
+
+	print("ALL FILES:")
+	subprocess.run(["ls","-R"])
+	print("-----------------------")
 else:
 	if not Path(opencv_root).is_dir():
 		print_msg(opencv_dir_base_name +" not found, downloading...")
