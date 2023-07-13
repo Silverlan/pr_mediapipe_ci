@@ -183,6 +183,7 @@ else:
 	mediapipe_build_file = script_dir +"/temp/build_mediapipe.sh"
 mediapipe_build_file = mediapipe_build_file.replace("\\", "/")
 print_msg("Generating msys2 batch-script...")
+print("mediapipe_build_file: ",mediapipe_build_file)
 with open(mediapipe_build_file, 'w') as file:
 	nmediapipe_root = mediapipe_root
 	if platform == "windows":
@@ -233,6 +234,8 @@ if buildMediapipe:
 		# See https://developers.google.com/mediapipe/framework/getting_started/install#installing_on_debian_and_ubuntu
 		install_linux_system_packages(["libopencv-core-dev","libopencv-highgui-dev","libopencv-calib3d-dev","libopencv-features2d-dev","libopencv-imgproc-dev","libopencv-video-dev","libopencv-contrib-dev"],no_sudo,no_confirm)
 		# subprocess.run([mediapipe_root +"/setup_opencv.sh"],check=True,shell=True)
+		print("EXEC: ",mediapipe_build_file)
+		os.chmod(mediapipe_build_file, 0o700)
 		subprocess.run([mediapipe_build_file],check=True,shell=True)
 
 # All the tasks we need have been generated at this point, the only exception being the blendshapes one, which we have to
