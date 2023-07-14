@@ -260,11 +260,11 @@ if buildMediapipe:
 		os.chmod(mediapipe_build_file, 0o700)
 		subprocess.run([mediapipe_build_file],check=True,shell=True)
 
-if platform == "win32":
-	os.chdir(mediapipe_root)
-	print("ALL FILES:")
-	subprocess.run('dir /A-D /S /B', check=True, shell=True)
-	print("-----------------------")
+#if platform == "win32":
+#	os.chdir(mediapipe_root)
+#	print("ALL FILES:")
+#	subprocess.run('dir /A-D /S /B', check=True, shell=True)
+#	print("-----------------------")
 
 # All the tasks we need have been generated at this point, the only exception being the blendshapes one, which we have to
 # download manually.
