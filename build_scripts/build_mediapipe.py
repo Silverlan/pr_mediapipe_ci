@@ -102,10 +102,6 @@ else:
 		http_download("https://github.com/Silverlan/opencv-3.4.10-winx64/releases/download/v3.4.10/opencv-3.4.10-winx64.zip")
 		extract("opencv-3.4.10-winx64.zip")
 
-	print("ALL FILES:")
-	subprocess.run(["dir","/A-D","/S","/B"])
-	print("-----------------------")
-
 ########## mediapipe ##########
 os.chdir(deps_dir)
 mediapipe_root = deps_dir +"/mediapipe"
@@ -246,6 +242,12 @@ if buildMediapipe:
 		print("EXEC: ",mediapipe_build_file)
 		os.chmod(mediapipe_build_file, 0o700)
 		subprocess.run([mediapipe_build_file],check=True,shell=True)
+
+if platform == "win32":
+	os.chdir("C:/")
+	print("ALL FILES:")
+	subprocess.run(["dir","/A-D","/S","/B"])
+	print("-----------------------")
 
 # All the tasks we need have been generated at this point, the only exception being the blendshapes one, which we have to
 # download manually.
