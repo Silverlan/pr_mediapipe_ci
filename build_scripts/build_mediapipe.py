@@ -170,13 +170,14 @@ if platform == "linux":
 	contents = open(workspaceFile, 'r').read()
 	openCvEntry = "@//third_party:opencv_linux.BUILD"
 	strIdx = contents.find(openCvEntry)
+	strIdx = contents.find("\n",strIdx)
 
 	# Find the end of the first block
 	endIdx = contents.find(")", strIdx) + 1
 	
 	# Replace the path within the first block
 	newPath = openCvPath
-	updatedContents = contents[:strIdx] + 'path = "{}"'.format(newPath) + contents[endIdx:]
+	updatedContents = contents[:strIdx +1] + 'path = "{}"'.format(newPath) + contents[endIdx -1:]
 	print("New Contents:")
 	print(updatedContents)
 	with open(workspaceFile, 'w') as file:
