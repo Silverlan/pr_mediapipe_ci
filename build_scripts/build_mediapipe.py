@@ -152,7 +152,6 @@ copy_mp_files(mediapipe_pragma_wrapper_root +"/mediapipe",mediapipe_root +"/medi
 mediapipeTarget = "mediapipe/examples/desktop/mediapipe_pragma_wrapper:mediapipe_pragma_wrapper"
 
 openCvPath = opencv_build
-openCvPath = openCvPath.replace("/", "\\").replace("\\", "\\\\")
 buildType = "opt"
 if build_with_debug_config:
 	buildType = "dbg"
@@ -178,9 +177,12 @@ if platform == "linux":
 	# Replace the path within the first block
 	newPath = openCvPath
 	updatedContents = contents[:strIdx] + 'path = "{}"'.format(newPath) + contents[endIdx:]
+	print("New Contents:")
+	print(updatedContents)
 	with open(workspaceFile, 'w') as file:
 		file.write(updatedContents)
 else:
+	openCvPath = openCvPath.replace("/", "\\").replace("\\", "\\\\")
 	openCvEntry = "path = \"C:\\\\opencv\\\\build\","
 	strIdx = open(workspaceFile, 'r').read().find(openCvEntry)
 	if strIdx != -1:
@@ -258,7 +260,7 @@ if buildMediapipe:
 		subprocess.run([mediapipe_build_file],check=True,shell=True)
 
 if platform == "win32":
-	os.chdir("C:/")
+	os.chdir(mediapipe_root)
 	print("ALL FILES:")
 	subprocess.run('dir /A-D /S /B', check=True, shell=True)
 	print("-----------------------")
