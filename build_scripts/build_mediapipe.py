@@ -167,10 +167,24 @@ if strIdx == -1:
         file.write(bazelRootEntry + '\n')
 
 workspaceFile = mediapipe_root +"/WORKSPACE"
-openCvEntry = "path = \"C:\\\\opencv\\\\build\","
-strIdx = open(workspaceFile, 'r').read().find(openCvEntry)
-if strIdx != -1:
-    replace_text_in_file(workspaceFile,openCvEntry,"path = \"" +openCvPath +"\",")
+if platform == "linux":
+	contents = open(workspaceFile, 'r').read()
+	openCvEntry = "@//third_party:opencv_linux.BUILD"
+	strIdx = contents.find(openCvEntry)
+
+	# Find the end of the first block
+	endIdx = contents.find(")", strIdx) + 1
+	
+	# Replace the path within the first block
+	newPath = openCvPath
+	updatedContents = contents[:strIdx] + 'path = "{}"'.format(newPath) + contents[endIdx:]
+	with open(workspaceFile, 'w') as file:
+		file.write(updatedContents)
+else:
+	openCvEntry = "path = \"C:\\\\opencv\\\\build\","
+	strIdx = open(workspaceFile, 'r').read().find(openCvEntry)
+	if strIdx != -1:
+	    replace_text_in_file(workspaceFile,openCvEntry,"path = \"" +openCvPath +"\",")
 
 bazel_cache_dir = deps_dir +"/_bazel"
 bazel_cache_dir = bazel_cache_dir.replace("\\", "/")
@@ -246,7 +260,7 @@ if buildMediapipe:
 if platform == "win32":
 	os.chdir("C:/")
 	print("ALL FILES:")
-	subprocess.run(["dir","/A-D","/S","/B"])
+	subprocess.run('dir /A-D /S /B', check=True, shell=True)
 	print("-----------------------")
 
 # All the tasks we need have been generated at this point, the only exception being the blendshapes one, which we have to
